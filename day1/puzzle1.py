@@ -1,3 +1,9 @@
+# def check2020(inputs,  value, total=2020):
+#     for input in inputs:
+#         left = total - right
+#         if str(left) in inputs:
+#             return left
+
 
 def puzzle1():
     with open('puzzle1.input') as file_input:
