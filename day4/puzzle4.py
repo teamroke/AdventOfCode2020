@@ -1,9 +1,43 @@
 import re
 
+def valid(passport):
+    # Validate mandatory fields
+    fields = ['byr' ,'iyr' ,'eyr' ,'hgt' ,'hcl' ,'ecl' ,'pid']
+    for f in fields:
+        if(f not in passport):
+            return False
+
+    # Validate numerical
+    if not ( 1920 <= int(passport['byr']) <= 2002):
+        return False
+    if not ( 2010 <= int(passport['iyr']) <= 2020):
+        return False
+    if not ( 2020 <= int(passport['eyr']) <= 2030):
+        return False
+
+    # Validate Height
+    if 'cm' in passport['hgt'] and not (150 <= int(passport['hgt'][:-2]) <=193):
+        return False
+    elif 'in' in passport['hgt'] and not (59 <= int(passport['hgt'][:-2]) <= 76):
+        return False
+    if 'cm' not in passport['hgt'] and 'in' not in passport['hgt']:
+        return False
+
+    # Validate strings/enums
+    if  passport['ecl'] not in ['amb', 'blu', 'brn','gry','grn','hzl','oth']:
+        return False
+    if re.match(r'^\#[0-9a-f]{6}$', passport['hcl']) is None:
+        return False
+    if re.match(r'^\d{9}$', passport['pid']) is None:
+        return False
+
+    return True
+
+
 def puzzle():
     passports = []
     passport = {}
-    valid = 0
+    goodPassport = 0
     total = 0
     with open('puzzle.input') as file_input:
         for line in file_input:
@@ -18,16 +52,9 @@ def puzzle():
                 field, value = entry.split(':')
                 passport[field] = value
         for passport in passports:
-            if all (key in passport for key in ("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")):
-                if re.search('^((19[2-9][0-9])|(200[0-2]))$', passport['byr']):
-                    if re.search('^((201[0-9])|2020)$', passport['iyr']):
-                        if re.search('^((202[0-9])|2030)$', passport['eyr']):
-                            if re.search('(^1([5-8][0-9])|(9[0-3])cm$)|(^(59|6[0-9]|7[0-6])in$)', passport['hgt']):
-                                if re.search('^#([0-9a-f]){6}$', passport['hcl']):
-                                    if re.search('^(amb|blu|brn|gry|grn|hzl|oth)$', passport['ecl']):
-                                        if re.search('^([0-9]{9})$', passport['pid']):
-                                            valid += 1
-    print(valid)
+            if valid(passport):
+                goodPassport += 1
+    print(goodPassport)
 
 puzzle()
 
